@@ -1,0 +1,131 @@
+heat_template_version: 2013-05-23
+
+description: Template that installs mesos master server(s) without slaves.
+
+parameters:
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for server. Please use an Ubuntu based image.
+    default: bbd62832-062e-445a-b7da-6c67d02b35a8
+    constraints:
+      - custom_constraint: glance.image
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used on the compute instance.
+    default: m1.small
+    constraints:
+      - custom_constraint: nova.flavor
+  key_name:
+    type: string
+    label: Key name
+    description: Name of key-pair to be installed on the compute instance.
+    default: r_key
+    constraints:
+      - custom_constraint: nova.keypair
+
+  private_network:
+    type: string
+    description: Name of private network to be created
+    default: PrivateNetwork
+
+  public_network:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+    default: seg-10.16.31.128-191
+
+resources:
+
+  network_master_1:
+    type: lib/mesos_network.yaml
+    properties:
+      private_network: { get_param: private_network }
+      public_network: { get_param: public_network }
+      security_group: { get_resource: server_security_group }
+
+  network_master_2:
+    type: lib/mesos_network.yaml
+    properties:
+      private_network: { get_param: private_network }
+      public_network: { get_param: public_network }
+      security_group: { get_resource: server_security_group }
+
+  network_master_3:
+    type: lib/mesos_network.yaml
+    properties:
+      private_network: { get_param: private_network }
+      public_network: { get_param: public_network }
+      security_group: { get_resource: server_security_group }
+
+  server_security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for server
+      name: All_from_muni_heat
+      rules:
+        - remote_ip_prefix: 147.251.0.0/16
+          protocol: tcp
+          port_range_min: 1
+          port_range_max: 65535
+        - remote_ip_prefix: 10.0.0.0/16
+          protocol: tcp
+          port_range_min: 1
+          port_range_max: 65535
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+
+  mesos_master_1:
+    type: lib/mesos_master.yaml
+    properties:
+      name: "mesos_master_1"
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      port: { get_attr: [network_master_1, port] }
+      private_ip_master_1: { get_attr: [network_master_1, private_ip] }
+      private_ip_master_2: { get_attr: [network_master_2, private_ip] }
+      private_ip_master_3: { get_attr: [network_master_3, private_ip] }
+      node_index: "1"
+      cluster_size: "3"
+
+  mesos_master_2:
+    type: lib/mesos_master.yaml
+    properties:
+      name: "mesos_master_2"
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      port: { get_attr: [network_master_2, port] }
+      private_ip_master_1: { get_attr: [network_master_1, private_ip] }
+      private_ip_master_2: { get_attr: [network_master_2, private_ip] }
+      private_ip_master_3: { get_attr: [network_master_3, private_ip] }
+      node_index: "2"
+      cluster_size: "3"
+
+  mesos_master_3:
+    type: lib/mesos_master.yaml
+    properties:
+      name: "mesos_master_3"
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      port: { get_attr: [network_master_3, port] }
+      private_ip_master_1: { get_attr: [network_master_1, private_ip] }
+      private_ip_master_2: { get_attr: [network_master_2, private_ip] }
+      private_ip_master_3: { get_attr: [network_master_3, private_ip] }
+      node_index: "3"
+      cluster_size: "3"
+
+
+outputs:
+  floating_ip_master_1:
+    description: Mesos master 1 floating IP
+    value: { get_attr: [network_master_1, floating_ip] }
+  floating_ip_master_2:
+        description: Mesos master 1 floating IP
+        value: { get_attr: [network_master_2, floating_ip] }
+  floating_ip_master_3:
+    description: Mesos master 1 floating IP
+    value: { get_attr: [network_master_3, floating_ip] }
