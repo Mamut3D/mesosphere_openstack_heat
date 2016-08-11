@@ -18,4 +18,10 @@ Template requires several parameters - defaults probably wont match your opensta
 * key_name - your ssh keyname registered in openstack
 * private_network - predefined private network with assignable ip addresses
 * public_network - floating ip network
+ 
+### Deployment corrctness
+You can check the deployment if you try to open one of the masters floating or private IPs at http://masterip:5050. On one of masters voted as a leader should be mesos gui, others will show gui ass well, but trying recconection. Marathon gui can be found at each http://masterip:8080
+
+#### Resources used
+https://www.digitalocean.com/community/tutorials/how-to-configure-a-production-ready-mesosphere-cluster-on-ubuntu-14-04
 
