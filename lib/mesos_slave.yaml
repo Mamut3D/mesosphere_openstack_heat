@@ -64,7 +64,7 @@ resources:
     properties:
       handle: { get_resource: wait_handle }
       count: 1
-      timeout: 900
+      timeout: 340
 
   wait_handle:
     type: OS::Heat::WaitConditionHandle
@@ -98,7 +98,7 @@ resources:
             MASTER_NODE_2_IP=__private_ip_master_2__
             MASTER_NODE_3_IP=__private_ip_master_3__
             CLUSTER_SIZE=__cluster_size__
-            NODE_INDEX=__node_index__
+            NODE_INDEX=__node_index__+1
 
             echo "private_ip_master_1 $MASTER_NODE_1_IP"
             echo "private_ip_master_2 $MASTER_NODE_2_IP"
@@ -115,8 +115,8 @@ resources:
             echo "export https_proxy=http://ogun.ics.muni.cz:3128/" >> /etc/environment
             export http_proxy=http://ogun.ics.muni.cz:3128/
             export https_proxy=http://ogun.ics.muni.cz:3128/
-            apt-get install htop vim -y
 
+            apt-get update -y
 
             # Mesos slave install
             # Setup

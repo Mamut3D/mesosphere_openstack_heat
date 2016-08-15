@@ -1,0 +1,88 @@
+heat_template_version: 2013-05-23
+
+description: Template that creates and installs mesos slave server with network.
+
+parameters:
+  name:
+    type: string
+    label: Compute instance name
+
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for server. Please use an Ubuntu based image.
+    default: bbd62832-062e-445a-b7da-6c67d02b35a8
+    constraints:
+      - custom_constraint: glance.image
+
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used on the compute instance.
+    default: m1.small
+    constraints:
+      - custom_constraint: nova.flavor
+
+  key_name:
+    type: string
+    label: Key name
+    description: Name of key-pair to be installed on the compute instance.
+    default: r_key
+    constraints:
+      - custom_constraint: nova.keypair
+
+  node_index:
+    type: string
+    label: SlaveNodeId
+    description: Zookeper id /etc/zookeeper/conf/myid. Each slave in cluster should have different one.
+
+  cluster_size:
+    type: string
+    label: ClusterSize
+    description: Total number of Slave nodes.
+
+  private_ip_master_1:
+    type: string
+    description: private ip of master 1 node
+
+  private_ip_master_2:
+    type: string
+    description: private ip of master 2 node
+
+  private_ip_master_3:
+    type: string
+    description: private ip of master 3 node
+
+  private_network:
+    type: string
+    description: Name of private network to be created
+    default: PrivateNetwork
+
+  security_group:
+    type: string
+    description: >
+      Defines security group for current port
+    default: default
+
+
+resources:
+
+  network_slave:
+    type: lib/mesos_network_priv.yaml
+    properties:
+      private_network: { get_param: private_network }
+      security_group: { get_param: security_group }
+
+  mesos_slave:
+    type: lib/mesos_slave.yaml
+    properties:
+      name: { get_param: name }
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key_name }
+      port: { get_attr: [network_slave, port] }
+      private_ip_master_1: { get_param: private_ip_master_1 }
+      private_ip_master_2: { get_param: private_ip_master_2 }
+      private_ip_master_3: { get_param: private_ip_master_3 }
+      node_index: { get_param: node_index }
+      cluster_size: { get_param: cluster_size }
