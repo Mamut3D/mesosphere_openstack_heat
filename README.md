@@ -1,5 +1,5 @@
 # mesosphere_openstack_heat
-Heat templates to deploy mesosphere cluster (3masters,3slaves) to openstack
+Heat templates to deploy mesosphere cluster (3masters, n slaves) to openstack
 
 ## Requirements
 Openstack with heat support
@@ -18,6 +18,7 @@ Template requires several parameters - defaults probably wont match your opensta
 * key_name - your ssh keyname registered in openstack
 * private_network - predefined private network with assignable ip addresses
 * public_network - floating ip network
+* slave_cluster_size - nuber of slave nodes in cluster
 
 ### Deployment correctness
 You can check the deployment if you try to open one of the masters floating or private IPs at http://masterip:5050. On one of masters voted as a leader should be mesos gui, others will show gui ass well, but trying recconection. Marathon gui can be found at each http://masterip:8080
