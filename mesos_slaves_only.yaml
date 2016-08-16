@@ -36,11 +36,6 @@ parameters:
     label: SlaveNodeId
     description: Zookeper id /etc/zookeeper/conf/myid. Each slave in cluster should have different one.
 
-  cluster_size:
-    type: string
-    label: ClusterSize
-    description: Total number of Slave nodes.
-
   private_ip_master_1:
     type: string
     description: private ip of master 1 node
@@ -58,6 +53,12 @@ parameters:
     description: Name of private network to be created
     default: PrivateNetwork
 
+  public_network:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+    default: seg-10.16.31.128-191    
+
   security_group:
     type: string
     description: >
@@ -68,9 +69,10 @@ parameters:
 resources:
 
   network_slave:
-    type: lib/mesos_network_priv.yaml
+    type: lib/mesos_network.yaml
     properties:
       private_network: { get_param: private_network }
+      public_network: { get_param: public_network }
       security_group: { get_param: security_group }
 
   mesos_slave:
@@ -85,4 +87,3 @@ resources:
       private_ip_master_2: { get_param: private_ip_master_2 }
       private_ip_master_3: { get_param: private_ip_master_3 }
       node_index: { get_param: node_index }
-      cluster_size: { get_param: cluster_size }

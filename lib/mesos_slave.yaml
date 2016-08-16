@@ -40,11 +40,6 @@ parameters:
     label: SlaveNodeId
     description: Zookeper id /etc/zookeeper/conf/myid. Each slave in cluster should have different one.
 
-  cluster_size:
-    type: string
-    label: ClusterSize
-    description: Total number of Slave nodes.
-
   private_ip_master_1:
     type: string
     description: private ip of master 1 node
@@ -86,7 +81,6 @@ resources:
             __private_ip_master_2__: { get_param: private_ip_master_2 }
             __private_ip_master_3__: { get_param: private_ip_master_3 }
             __node_index__: { get_param: node_index }
-            __cluster_size__: {get_param: cluster_size }
             wc_notify: { get_attr: ['wait_handle', 'curl_cli'] }
           template: |
             #!/bin/sh
@@ -97,13 +91,11 @@ resources:
             MASTER_NODE_1_IP=__private_ip_master_1__
             MASTER_NODE_2_IP=__private_ip_master_2__
             MASTER_NODE_3_IP=__private_ip_master_3__
-            CLUSTER_SIZE=__cluster_size__
-            NODE_INDEX=__node_index__+1
+            NODE_INDEX=$((__node_index__+1))
 
             echo "private_ip_master_1 $MASTER_NODE_1_IP"
             echo "private_ip_master_2 $MASTER_NODE_2_IP"
             echo "private_ip_master_3 $MASTER_NODE_3_IP"
-            echo "cluster_size $CLUSTER_SIZE"
             echo "node_index $NODE_INDEX"
 
             #sudo su

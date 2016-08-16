@@ -143,8 +143,8 @@ resources:
           private_ip_master_1: { get_attr: [network_master_1, private_ip] }
           private_ip_master_2: { get_attr: [network_master_2, private_ip] }
           private_ip_master_3: { get_attr: [network_master_3, private_ip] }
-          cluster_size: { get_param: slave_cluster_size }
           private_network: { get_param: private_network }
+          public_network: { get_param: public_network }
           security_group: { get_resource: server_security_group }
 
 
